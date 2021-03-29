@@ -1,5 +1,5 @@
-- [1. Storage clients packages](#1-storage-clients-packages)
-- [2. Introduction](#2-introduction)
+- [1. Introduction](#1-introduction)
+- [2. Storage clients packages](#2-storage-clients-packages)
 - [3. Blobs](#3-blobs)
   - [3.1. Packages changes](#31-packages-changes)
   - [3.2. Packages dependencies to add](#32-packages-dependencies-to-add)
@@ -15,15 +15,32 @@
     - [4.3.1. usings](#431-usings)
     - [4.3.2. Classes](#432-classes)
   - [4.4. Projects and solutions to apply](#44-projects-and-solutions-to-apply)
-  - [4.5. Web jobs](#45-web-jobs)
-    - [4.5.1. Packages changes](#451-packages-changes)
-    - [4.5.2. Code changes](#452-code-changes)
-      - [4.5.2.1. Classes](#4521-classes)
-      - [4.5.2.2. Projects and solutions to apply](#4522-projects-and-solutions-to-apply)
+- [5. Web jobs](#5-web-jobs)
+  - [5.1. Packages changes](#51-packages-changes)
+  - [5.2. Packages dependencies to add](#52-packages-dependencies-to-add)
+  - [5.3. Packages dependencies to remove](#53-packages-dependencies-to-remove)
+  - [5.4. Code changes](#54-code-changes)
+    - [5.4.1. Usings](#541-usings)
+    - [5.4.2. Classes](#542-classes)
+  - [5.5. Projects and solutions to apply](#55-projects-and-solutions-to-apply)
 
-# 1. Storage clients packages
+# 1. Introduction
 
-# 2. Introduction
+This document is intended to facilitate the effort estimation and impact assessment required to upgrade the client packages used to consume Azure Storage related services.
+
+Within this document you will find a section dedicated to each of the packages that will be upgraded, identifying not only the main package but also its dependencies, the packages that should be removed and the list of classes and packages that will be impacted by the change.
+
+It is important to clarify that the list of classes and projects impacted by the package update only takes into account those that will be directly impacted, so it is possible that at the end of the updates, the number of modified classes will be higher than the one shown here.
+
+# 2. Storage clients packages
+
+As part of the package upgrade associated with Azure Storage service consumption, related services were first identified.
+
+The following table extracted from the [documentation](https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction#:~:text=azure%20storage%20is%20designed%20to,world%20over%20http%20or%20https.) official shows the 5 main services that make up Azure Storage:
+
+![azure storage services](storage.PNG)
+
+Additionally, for each service, required changes in libraries, classes and code were identified in order to facilitate the estimation of the effort and impact related to the update of Azure Storage client packages.
 
 # 3. Blobs
 
@@ -61,34 +78,31 @@ As concecuense of upgrate client packages related to blob storage, the following
 
 ## 3.4. Code changes
 
-How you can see inside official azure blob documentation, the code related
+How you can see inside official azure blob documentation by [.Net (v11 SDK)](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-dotnet-legacy) and [.Net (v12 SDK)](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-dotnet)
+, the code related
 to client libraries has three main diferences: libraries, usings and client
-classes to connect, next sections will show this situation with more detail
-
-https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-dotnet
-
-https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-dotnet-legacy
+classes to connect, next sections will show this situation with more detail.
 
 ### 3.4.1. Usings
 
-| Usings to add with v11 for .NET | Usings to add with v12 for .NET |
-| ------------------------------- | ------------------------------- |
-| Microsoft.Azure.Storage         | Azure.Storage.Blobs             |
-| Microsoft.Azure.Storage.Blob    | Azure.Storage.Blobs.Models      |
+| Usings to add with .Net (v11 SDK) | Usings to add with .Net (v12 SDK) |
+| --------------------------------- | --------------------------------- |
+| Microsoft.Azure.Storage           | Azure.Storage.Blobs               |
+| Microsoft.Azure.Storage.Blob      | Azure.Storage.Blobs.Models        |
 
 ### 3.4.2. Classes
 
 The next table contains main changes related to clases for blob storage
 
-| Usings to add with v11 for .NET | Usings to add with v12 for .NET |
-| ------------------------------- | ------------------------------- |
-| CloudBlobClient                 | BlobServiceClient               |
-| CloudBlobContainer              | BlobContainerClient             |
+| Client classes .Net (v11 SDK) | Client classes .Net (v12 SDK) |
+| ----------------------------- | ----------------------------- |
+| CloudBlobClient               | BlobServiceClient             |
+| CloudBlobContainer            | BlobContainerClient           |
 
 As example you can see the next to code's segments for conecting and using
 blobs with v11 for .NET or with v12 for .NET:
 
-Code fragment for create a blob container with v11 .Net
+Code fragment for create a blob container with .Net (v11 SDK)
 
 ```
 // use conection string to create an storageAccount
@@ -108,7 +122,7 @@ await cloudBlobContainer.CreateAsync();
 }
 ```
 
-Code fragment for create a blob container with v12 .Net:
+Code fragment for create a blob container with .Net (v12 SDK):
 
 ```
 BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
@@ -250,51 +264,70 @@ code is less than the .net v12 but need be modified after with the nuget package
 | Microsoft.AEO.Services              | QueueSummaryModule         |
 | Microsoft.AEO.Services              | QueueSummaryService        |
 
-## 4.5. Web jobs
+# 5. Web jobs
 
-### 4.5.1. Packages changes
+For the web job case, the main package used to consume **_azure storage_** services is **_Microsoft.Azure.WebJobs.Extensions.Storage_** however as shown in the image this package requires a version of Microsoft.Azure.WebJobs equal or greater than 3.0.22
 
-Microsoft.Azure.WebJobs.Core
+![web job client dependencies](web_jobs_client_dependencies.PNG)
+
+As a consequence of the above, in the case of **_web job_**, updating the
+Azure Storage client packages will also require updating the **_Microsoft.Azure.WebJobs_** going from version 2.x to version 3.x of the sdk, for this reason the following sections will also mention the adjustments to be made once the version of **_Microsof.Azure.WebJobs_** is upgraded.
+
+## 5.1. Packages changes
+
+Microsoft.Azure.WebJobs
+
+| Current packages                    | Packages to install                        |
+| ----------------------------------- | ------------------------------------------ |
+| Microsoft.Azure.WebJobs v2.2.0      | Microsoft.Azure.WebJobs v3.0.27            |
+| Microsoft.Azure.WebJobs.Core v2.2.0 | Microsoft.Azure.WebJobs.Core v3.0.27       |
+|                                     | Microsoft.Azure.WebJobs.Extensions         |
+|                                     | Microsoft.Azure.WebJobs.Extensions.Storage |
+|                                     | Microsoft.Extensions.Logging.Console       |
+
+## 5.2. Packages dependencies to add
 
 Dependencies for Microsoft.Azure.WebJobs.Core:
 
 - System.ComponentModel.Annotations
 - System.Diagnostics.TraceSource
 - Microsoft.Azure.WebJobs.Core
-- System.Diagnostics.TraceSource
 
 Dependencies for Microsoft.Azure.WebJobs:
 
-- Microsoft.Bcl.AsyncInterfaces.1.0.0
-- Microsoft.Extensions.Configuration.2.1.1
-- Microsoft.Extensions.Configuration.Abstractions.2.1.1
-- Microsoft.Extensions.Configuration.Binder.2.1.1
-- Microsoft.Extensions.Configuration.EnvironmentVariables.2.1.0
-- Microsoft.Extensions.Configuration.FileExtensions.2.1.0
-- Microsoft.Extensions.Configuration.Json.2.1.0
-- Microsoft.Extensions.DependencyInjection.2.1.0
-- Microsoft.Extensions.DependencyInjection.Abstractions.2.1.1
-- Microsoft.Extensions.FileProviders.Abstractions.2.1.0
-- Microsoft.Extensions.FileProviders.Physical.2.1.0
-- Microsoft.Extensions.FileSystemGlobbing.2.1.0
-- Microsoft.Extensions.Hosting.2.1.0
-- Microsoft.Extensions.Hosting.Abstractions.2.1.0
-- Microsoft.Extensions.Logging.2.1.1
-- Microsoft.Extensions.Logging.Abstractions.2.1.1
-- Microsoft.Extensions.Logging.Configuration.2.1.0
-- Microsoft.Extensions.Options.2.1.1
-- Microsoft.Extensions.Options.ConfigurationExtensions.2.1.0
-- Microsoft.Extensions.Primitives.2.1.1
-- System.Buffers.4.5.0
-- System.Memory.4.5.3
-- System.Memory.Data.1.0.1
-- System.Numerics.Vectors.4.5.0
-- System.Runtime.CompilerServices.Unsafe.4.6.0
-- System.Text.Encodings.Web.4.6.0
-- System.Text.Json.4.6.0
-- System.Threading.Tasks.Dataflow.4.8.0
-- System.Threading.Tasks.Extensions.4.5.2
-- System.ValueTuple.4.5.0
+- System.ComponentModel.Annotations
+- System.Diagnostics.TraceSource
+- Microsoft.Azure.WebJobs.Core
+- Microsoft.Bcl.AsyncInterfaces
+- Microsoft.Extensions.Configuration
+- Microsoft.Extensions.Configuration.Abstractions
+- Microsoft.Extensions.Configuration.Binder
+- Microsoft.Extensions.Configuration.EnvironmentVariables
+- Microsoft.Extensions.Configuration.FileExtensions
+- Microsoft.Extensions.Configuration.Json
+- Microsoft.Extensions.DependencyInjection
+- Microsoft.Extensions.DependencyInjection.Abstractions
+- Microsoft.Extensions.FileProviders.Abstractions
+- Microsoft.Extensions.FileProviders.Physical
+- Microsoft.Extensions.FileSystemGlobbing
+- Microsoft.Extensions.Hosting
+- Microsoft.Extensions.Hosting.Abstractions
+- Microsoft.Extensions.Logging
+- Microsoft.Extensions.Logging.Abstractions
+- Microsoft.Extensions.Logging.Configuration
+- Microsoft.Extensions.Options
+- Microsoft.Extensions.Options.ConfigurationExtensions
+- Microsoft.Extensions.Primitives
+- System.Buffers
+- System.Memory
+- System.Memory.Data
+- System.Numerics.Vectors
+- System.Runtime.CompilerServices.Unsafe
+- System.Text.Encodings.Web
+- System.Text.Json
+- System.Threading.Tasks.Dataflow
+- System.Threading.Tasks.Extensions
+- System.ValueTuple
 - Microsoft.Extensions.Configuration.Abstractions
 - Microsoft.Extensions.FileSystemGlobbin
 - Microsoft.Extensions.Configuration.Binder
@@ -305,8 +338,184 @@ Dependencies for Microsoft.Azure.WebJobs:
 - Microsoft.Extensions.Configuration.EnvironmentVariables
 - System.Memory.Data
 
-### 4.5.2. Code changes
+Microsoft.Azure.WebJobs.Extensions
 
-#### 4.5.2.1. Classes
+- Microsoft.Azure.Storage.Blob
+- Microsoft.Azure.Storage.Common
+- Microsoft.Azure.WebJobs.Extensions
+- Microsoft.Azure.WebJobs.Host.Storage
+- ncrontab.signed
 
-#### 4.5.2.2. Projects and solutions to apply
+Microsoft.Azure.WebJobs.Extensions.Storage
+
+- Microsoft.Azure.Cosmos.Table
+- Microsoft.Azure.DocumentDB.Core
+- Microsoft.Azure.Storage.Queue
+- Microsoft.Azure.WebJobs.Extensions.Storage
+- Microsoft.NETCore.Platforms
+- Microsoft.OData.Core
+- Microsoft.OData.Edm
+- Microsoft.Spatial
+- Microsoft.Win32.Primitives
+- NETStandard.Library
+- System.AppContext
+- System.Collections
+- System.Collections.Concurrent
+- System.Collections.Immutable
+- System.Collections.NonGeneric
+- System.Collections.Specialized
+- System.Console
+- System.Diagnostics.Debug
+- System.Diagnostics.Tools
+- System.Diagnostics.Tracing
+- System.Dynamic.Runtime
+- System.Globalization
+- System.Globalization.Calendars
+- System.IO
+- System.IO.Compression
+- System.IO.Compression.ZipFile
+- System.IO.FileSystem
+- System.IO.FileSystem.Primitives
+- System.Linq
+- System.Linq.Expressions
+- System.Linq.Queryable
+- System.Net.Http
+- System.Net.NameResolution
+- System.Net.NetworkInformation
+- System.Net.Primitives
+- System.Net.Requests
+- System.Net.Security
+- System.Net.Sockets
+- System.Net.WebHeaderCollection
+- System.ObjectModel
+- System.Reflection
+- System.Reflection.Extensions
+- System.Reflection.Primitives
+- System.Resources.ResourceManager
+- System.Runtime
+- System.Runtime.Extensions
+- System.Runtime.Handles
+- System.Runtime.InteropServices
+- System.Runtime.InteropServices.RuntimeInformation
+- System.Runtime.Numerics
+- System.Runtime.Serialization.Primitives
+- System.Security.Cryptography.Algorithms
+- System.Security.Cryptography.Encoding
+- System.Security.Cryptography.Primitives
+- System.Security.Cryptography.X509Certificates
+- System.Security.SecureString
+- System.Text.Encoding
+- System.Text.Encoding.Extensions
+- System.Text.RegularExpressions
+- System.Threading
+- System.Threading.Tasks
+- System.Threading.Timer
+- System.Xml.ReaderWriter
+- System.Xml.XDocument
+
+Microsoft.Extensions.Logging.Console
+
+- Microsoft.Bcl.AsyncInterfaces
+- Microsoft.Extensions.Configuration
+- Microsoft.Extensions.Configuration.Abstractions
+- Microsoft.Extensions.Configuration.Binder
+- Microsoft.Extensions.DependencyInjection
+- Microsoft.Extensions.DependencyInjection.Abstractions
+- Microsoft.Extensions.Logging
+- Microsoft.Extensions.Logging.Abstractions
+- Microsoft.Extensions.Logging.Configuration
+- Microsoft.Extensions.Options
+- Microsoft.Extensions.Options.ConfigurationExtensions
+- Microsoft.Extensions.Primitives
+- System.Buffers
+- System.Memory
+- System.Runtime.CompilerServices.Unsafe
+- System.Runtime.InteropServices.RuntimeInformation
+- System.Text.Encodings.Web
+- System.Text.Json
+- System.Threading.Tasks.Extensions
+- Microsoft.Extensions.Logging.Console
+- System.Diagnostics.DiagnosticSource
+
+## 5.3. Packages dependencies to remove
+
+Once the respective changes have been made, the following package should be removed since its status will not only be deprecated but also no longer in use.
+
+- WindowsAzure.Storage
+
+## 5.4. Code changes
+
+In this case the main code adjustments will be made as a consequence of updating the Web jobs sdk.
+
+As seen in the documentation [Web jobs SDK](https://docs.microsoft.com/en-us/azure/app-service/webjobs-sdk-how-to) one of the main changes will be the creation and execution of the host for the webjob as follows:
+
+WebJobs host SDK v2.x:
+
+```
+static void Main(string[] args)
+{
+    JobHostConfiguration config = new JobHostConfiguration();
+    config.StorageConnectionString = _storageConn;
+    JobHost host = new JobHost(config);
+    host.RunAndBlock();
+}
+```
+
+WebJobs host SDK v3.x:
+
+```
+static async Task Main()
+{
+    var builder = new HostBuilder();
+    builder.UseEnvironment("development");
+    builder.ConfigureWebJobs(b =>
+            {
+                b.AddAzureStorageCoreServices();
+            });
+    var host = builder.Build();
+    using (host)
+    {
+        await host.RunAsync();
+    }
+}
+```
+
+### 5.4.1. Usings
+
+| Usings to add with webjobs (v2.x SDK) | Usings to add with webjobs (v3.x SDK)  |
+| ------------------------------------- | -------------------------------------- |
+| Microsoft.Azure.WebJobs (host)        | Microsoft.Extensions.Hosting           |
+| Microsoft.WindowsAzure.Storage.Queue  | Microsoft.Azure.WebJobs (QueueTrigger) |
+|                                       | Microsoft.Extensions.Logging           |
+
+### 5.4.2. Classes
+
+| Classes webjobs (v2.x SDK) | Classes webjobs (v3.x SDK) |
+| -------------------------- | -------------------------- |
+| JobHostConfiguration       | HostBuilder                |
+
+## 5.5. Projects and solutions to apply
+
+| Project                                   | class                         |
+| ----------------------------------------- | ----------------------------- |
+| Microsoft.AEO.Jobs.ActivityMonitor        | ActivityMonitorProgram        |
+| Microsoft.AEO.Jobs.AssetsPump             | AssetsPumpProgram             |
+| Microsoft.AEO.Jobs.BatchEventProcessor    | BatchEventProcessorProgram    |
+| Microsoft.AEO.Jobs.EmailBatchProcessor    | EmailBatchProcessorProgram    |
+| Microsoft.AEO.Jobs.EmailDeliverer         | EmailDelivererProgram         |
+| Microsoft.AEO.Jobs.EmailProcessor         | Program                       |
+| Microsoft.AEO.Jobs.EmailSender            | EmailSenderProgram            |
+| Microsoft.AEO.Jobs.MessageProcessor       | MessageProcessorProgram       |
+| Microsoft.AEO.Jobs.PCFAgent               | PCFAgentProgram               |
+| Microsoft.AEO.Jobs.PreviewGenerator       | PreviewGeneratorProgram       |
+| Microsoft.AEO.Jobs.PrivacyV2              | PrivacyProgram                |
+| Microsoft.AEO.Jobs.QueueDepth             | QueueDepthProgram             |
+| Microsoft.AEO.Jobs.StoppingMonitor        | StoppingMonitor               |
+| Microsoft.AEO.Jobs.SubscriptionTranslator | SubscriptionTranslatorProgram |
+| Microsoft.AEO.Jobs.SuppressionReporter    | SuppressionReporterProgram    |
+| Microsoft.AEO.Jobs.TrackingProcessor      | TrackingProgram               |
+| Microsoft.AEO.Jobs.Nurturer               | NurturerProgram               |
+| Microsoft.AEO.Jobs.NurturerSteps          | NurturerStepProgram           |
+| Microsoft.AEO.Jobs.SubscriptionsReader    | SubscriptionsReaderProgram    |
+| Microsoft.AEO.Jobs.SubsReprocessor        | SubsReprocessorProgram        |
+| Microsoft.AEO.Jobs.CommonModules          | StorageModule                 |

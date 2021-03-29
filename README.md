@@ -23,6 +23,8 @@
     - [5.4.1. Usings](#541-usings)
     - [5.4.2. Classes](#542-classes)
   - [5.5. Projects and solutions to apply](#55-projects-and-solutions-to-apply)
+- [Proposed Approach](#proposed-approach)
+- [Estimated Effort](#estimated-effort)
 
 # 1. Introduction
 
@@ -46,10 +48,10 @@ Additionally, for each service, required changes in libraries, classes and code 
 
 ## 3.1. Packages changes
 
-| Current packages (v11 for .NET) | Packages to install (v12 for .NET) |
-| ------------------------------- | ---------------------------------- |
-| Microsoft.Azure.Storage.Blob    | Azure.Storage.Blobs                |
-| Microsoft.Azure.Storage.Common  | Azure.Storage.Common               |
+| Current packages (v9.3.2.0 for .NET) | Packages to install (v12 for .NET) |
+| ------------------------------------ | ---------------------------------- |
+| Microsoft.WindowsAzure.Storage.Blob  | Azure.Storage.Blobs                |
+| Microsoft.WindowsAzure.Storage.      | Azure.Storage.Common               |
 
 ## 3.2. Packages dependencies to add
 
@@ -73,36 +75,35 @@ In this case **_Azure.Storage.Blobs_** will be main package to install but all o
 
 As concecuense of upgrate client packages related to blob storage, the following packages will be deprecated and should be removed from dependencies:
 
-- Microsoft.Azure.Storage.Common
-- Microsoft.Azure.Storage.Blob
+- Microsoft.WindowsAzure.Storage
 
 ## 3.4. Code changes
 
-How you can see inside official azure blob documentation by [.Net (v11 SDK)](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-dotnet-legacy) and [.Net (v12 SDK)](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-dotnet)
+How you can see inside official azure blob documentation by .Net (v9.3.2.0) and [.Net (v12 SDK)](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-dotnet)
 , the code related
 to client libraries has three main diferences: libraries, usings and client
 classes to connect, next sections will show this situation with more detail.
 
 ### 3.4.1. Usings
 
-| Usings to add with .Net (v11 SDK) | Usings to add with .Net (v12 SDK) |
-| --------------------------------- | --------------------------------- |
-| Microsoft.Azure.Storage           | Azure.Storage.Blobs               |
-| Microsoft.Azure.Storage.Blob      | Azure.Storage.Blobs.Models        |
+| Usings to add with .Net (v9.3.2.0)  | Usings to add with .Net (v12 SDK) |
+| ----------------------------------- | --------------------------------- |
+| Microsoft.WindowsAzure.Storage      | Azure.Storage.Blobs               |
+| Microsoft.WindowsAzure.Storage.Blob | Azure.Storage.Blobs.Models        |
 
 ### 3.4.2. Classes
 
 The next table contains main changes related to clases for blob storage
 
-| Client classes .Net (v11 SDK) | Client classes .Net (v12 SDK) |
-| ----------------------------- | ----------------------------- |
-| CloudBlobClient               | BlobServiceClient             |
-| CloudBlobContainer            | BlobContainerClient           |
+| Client classes .Net (v9.3.2.0) | Client classes .Net (v12 SDK) |
+| ------------------------------ | ----------------------------- |
+| CloudBlobClient                | BlobServiceClient             |
+| CloudBlobContainer             | BlobContainerClient           |
 
 As example you can see the next to code's segments for conecting and using
-blobs with v11 for .NET or with v12 for .NET:
+blobs with v9.3.2.0 for .NET or with v12 for .NET:
 
-Code fragment for create a blob container with .Net (v11 SDK)
+Code fragment for create a blob container with .Net (v9.3.2.0)
 
 ```
 // use conection string to create an storageAccount
@@ -122,7 +123,7 @@ await cloudBlobContainer.CreateAsync();
 }
 ```
 
-Code fragment for create a blob container with .Net (v12 SDK):
+Code fragment for create a blob container with .Net (v9.3.2.0):
 
 ```
 BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
@@ -152,10 +153,10 @@ will be affected:
 
 ## 4.1. Packages changes
 
-| Current packages (v11 for .NET)      | Packages to install (v12 for .NET)        |
+| Current packages (v9.3.2.0 for .NET) | Packages to install (v12 for .NET)        |
 | ------------------------------------ | ----------------------------------------- |
-| Microsoft.Azure.Storage.Queue        | Azure.Storage.Queues                      |
-| Microsoft.Azure.ConfigurationManager | system.Configuration.ConfigurationManager |
+| Microsoft.WindowsAzure.Storage.Queue | Azure.Storage.Queues                      |
+|                                      | system.Configuration.ConfigurationManager |
 
 ## 4.2. Packages dependencies to add
 
@@ -190,25 +191,24 @@ dependencies list for **_System.Configuration.ConfigurationManager_**:
 
 ### 4.3.1. usings
 
-| Usings to add with v11 for .NET | Usings to add with v12 for .NET |
-| ------------------------------- | ------------------------------- |
-| Microsoft.Azure                 | Azure.Storage.Queues            |
-| Microsoft.Azure.Storage         | Azure.Storage.Queues.Models     |
-| Microsoft.Azure.Storage.Queue   |                                 |
+| Usings to add with v9.3.2.0 for .NET | Usings to add with v12 for .NET |
+| ------------------------------------ | ------------------------------- |
+| Microsoft.WindowsAzure.Storage       | Azure.Storage.Queues.Models     |
+| Microsoft.WindowsAzure.Storage.Queue | Azure.Storage.Queues            |
 
 ### 4.3.2. Classes
 
 The next table contains main changes related to clases for queue's client code.
 
-| Usings to add with v11 for .NET | Usings to add with v12 for .NET |
-| ------------------------------- | ------------------------------- |
-| CloudQueueClient                | queueClient                     |
-| CloudQueue                      |                                 |
+| Usings to add with v9.3.2.0 for .NET | Usings to add with v12 for .NET |
+| ------------------------------------ | ------------------------------- |
+| CloudQueueClient                     | queueClient                     |
+| CloudQueue                           |                                 |
 
 As example you can see the next to code's segments for conecting and using
-queues with v11 for .NET or with v12 for .NET:
+queues with v9.3.2.0 for .NET or with v12 for .NET:
 
-Code fragment for create a queue with v11 .Net
+Code fragment for create a queue with v9.3.2.0 .Net
 
 ```
 // Retrieve storage account from connection string
@@ -519,3 +519,21 @@ static async Task Main()
 | Microsoft.AEO.Jobs.SubscriptionsReader    | SubscriptionsReaderProgram    |
 | Microsoft.AEO.Jobs.SubsReprocessor        | SubsReprocessorProgram        |
 | Microsoft.AEO.Jobs.CommonModules          | StorageModule                 |
+
+# Proposed Approach
+
+En este caso el conjunto de pasos a seguir propuesto sería el siguiente:
+
+- Removed current libraries: This to avoid conflicts with new libraries
+- Add new libraries: After this step, new namespaces will be available to start code changes
+- Apply code modifications, in code related to web jobs, blobs and queues
+- Add new libraries to unique feed
+- Execute unit and local test
+
+# Estimated Effort
+
+Since in this case the libraries to be modified affect common libraries within the solutions, the estimated time is 3 weeks.
+solutions, the estimated time is set at 3 weeks.
+
+- Webjobs changes : 1 week
+- Blobs and Queues : 2 weeks

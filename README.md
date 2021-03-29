@@ -266,7 +266,7 @@ code is less than the .net v12 but need be modified after with the nuget package
 
 # 5. Web jobs
 
-For the web job case, the main package used to consume **_azure storage_** services is **_Microsoft.Azure.WebJobs.Extensions.Storage_** however as shown in the image this package requires a version of Microsoft.Azure.WebJobs equal or greater than 3.0.22
+For the web job case, the main package used to consume **_azure storage_** services is **_Microsoft.Azure.WebJobs.Extensions.Storage_** however as shown in the image this package requires a version of [Microsoft.Azure.WebJobs equal or greater than 3.0.22](https://www.nuget.org/packages/Microsoft.Azure.WebJobs.Extensions.Storage/)
 
 ![web job client dependencies](web_jobs_client_dependencies.PNG)
 
